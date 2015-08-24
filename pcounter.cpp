@@ -1,7 +1,7 @@
 /**
- * @file bg_sub.cpp
- * @brief Background subtraction tutorial sample code
- * @author Domenico D. Bloisi
+ * @file pcounter.cpp
+ * @brief people counter tutorial sample code
+ * @author Raul Villanueva
  */
 
 // opencv
@@ -60,15 +60,14 @@ void cannyOps(int, void *);
 void help() {
   cout << "--------------------------------------------------------------------"
           "------" << endl
-       << "This program shows how to use background subtraction methods "
-          "provided by " << endl
-       << " OpenCV. You can process both videos (-vid) and images (-img)."
+       << "This program shows how to use opencv to counter people passing by, "
+          "using OpenCV." << endl
        << endl
        << endl
        << "Usage:" << endl
-       << "./bs {-vid <video filename>}" << endl
-       << "for example: ./bs -vid video.avi" << endl
-       << "or: ./bs -cam" << endl
+       << "./pcounter {-vid <video filename>}" << endl
+       << "for example: ./pcounter -vid video.avi" << endl
+       << "or: ./pcounter -cam" << endl
        << "--------------------------------------------------------------------"
           "------" << endl
        << endl;
