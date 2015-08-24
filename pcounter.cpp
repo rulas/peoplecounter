@@ -60,7 +60,7 @@ void cannyOps(int, void *);
 void help() {
   cout << "--------------------------------------------------------------------"
           "------" << endl
-       << "This program shows how to use opencv to counter people passing by, "
+       << "This program shows how to use opencv to count people passing by, "
           "using OpenCV." << endl
        << endl
        << endl
@@ -83,11 +83,11 @@ int main(int argc, char *argv[]) {
   cout << "argc=" << argc << endl;
 
   // check for the input parameter correctness
-  //    if(argc != 3) {
-  //        cerr <<"Incorret input list" << endl;
-  //        cerr <<"exiting..." << endl;
-  //        return EXIT_FAILURE;
-  //    }
+  // if(argc < 2) {
+  //    cerr <<"Incorret input list" << endl;
+  //    cerr <<"exiting..." << endl;
+  //    return EXIT_FAILURE;
+  // }
 
   // create GUI windows
   namedWindow(sourceWindow);
@@ -117,10 +117,10 @@ int main(int argc, char *argv[]) {
   pMOG2 = createBackgroundSubtractorMOG2();  // MOG2 approach
   pKNN = createBackgroundSubtractorKNN();
 
-  if (strcmp(argv[1], "-vid") == 0) {
+  if (argc == 3 && strcmp(argv[1], "-vid") == 0) {
     // input data coming from a video
     processVideo(argv[2]);
-  } else if (strcmp(argv[1], "-cam") == 0 || argc == 1) {
+  } else if ((argc == 2 && strcmp(argv[1], "-cam") == 0 ) || argc == 1) {
     processVideo(nullptr);
   } else {
     // error in reading input parameters
@@ -214,9 +214,9 @@ void processVideo(char *videoFilename) {
     }
 
     // resize image to half if high resolution video
-    if (highResVideo) {
-      resize(frame, frame, Size(frame.cols / 2, frame.rows / 2));
-    }
+    // if (shighResVideo) {
+    //   resize(frame, frame, Size(frame.cols / 2, frame.rows / 2));
+    // }
 
     // update the background model
     pMOG2->apply(frame, fgMaskMOG2);
