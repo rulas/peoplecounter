@@ -78,11 +78,8 @@ void help() {
 void createGuiObjects() {
     // create GUI windows
   namedWindow(sourceWindow);
-  // namedWindow(fgMaskMOG2Window);
   namedWindow(fgMaskKNNWindow);
-  // namedWindow(keypointsWindow);
   namedWindow(contoursWindow);
-  // namedWindow(morphOpsWindow);
 
   createTrackbar("Canny thresh: ", contoursWindow, &thresh, max_thresh,
                  cannyOps);
@@ -99,24 +96,7 @@ int main(int argc, char *argv[]) {
 
   cout << "argc=" << argc << endl;
 
-  // check for the input parameter correctness
-  // if(argc < 2) {
-  //    cerr <<"Incorret input list" << endl;
-  //    cerr <<"exiting..." << endl;
-  //    return EXIT_FAILURE;
-  // }
-
   createGuiObjects();
-
-  // createTrackbar(
-  //     "Operator:\n 0: Opening - 1: Closing \n 2: Gradient - 3: Top "
-  //     "Hat \n 4: Black Hat",
-  //     morphOpsWindow, &morph_operator, max_operator, morphOps);
-  // /// Create Trackbar to select kernel type
-  // createTrackbar("Element:\n 0: Rect - 1: Cross - 2: Ellipse", morphOpsWindow,
-  //                &morph_elem, max_elem, morphOps);
-  
-  // createTrackbar("Closing size: ", contoursWindow, &closing, 255, nullptr);
 
   // create Background Subtractor objects
   pMOG2 = createBackgroundSubtractorMOG2();  // MOG2 approach
@@ -217,30 +197,18 @@ void processVideo(char *videoFilename) {
       exit(EXIT_FAILURE);
     }
 
-    // resize image to half if high resolution video
-    // if (shighResVideo) {
-    //   resize(frame, frame, Size(frame.cols / 2, frame.rows / 2));
-    // }
-
     // update the background model
     pMOG2->apply(frame, fgMaskMOG2);
     pKNN->apply(frame, fgMaskKNN);
-
-    // clean background model
-    // Mat structure_elem = getStructuringElement(MORPH_RECT, Size(closing,
-    // closing));
-    // morphologyEx(fgMaskMOG2, fgMaskMOG2, MORPH_CLOSE, structure_elem);
-    // morphologyEx(fgMaskKNN, fgMaskKNN, MORPH_CLOSE, structure_elem);
 
     // apply morphological operations
     morphOps(0, 0);
 
     // detect contours
-    // cannyOps(0, 0);
+    cannyOps(0, 0);
 
     // show frame number info
     frameInfoOps(0, 0);
-
 
 
     if (printOnceOnly) {
@@ -284,11 +252,7 @@ void morphOps(int, void *) {
 
   Mat element = getStructuringElement(MORPH_RECT, Size(morph_size, morph_size));
 
-  /// Apply the specified morphology operation
-  // morphologyEx(frame, , operation, element );
-  // morphologyEx(fgMaskMOG2, fgMaskMOG2, MORPH_CLOSE, element);
   morphologyEx(fgMaskKNN, fgMaskKNN, MORPH_CLOSE, element);
-  // imshow(fgMaskMOG2Window, fgMaskMOG2);
   imshow(fgMaskKNNWindow, fgMaskKNN);
 }
 
@@ -302,5 +266,4 @@ void frameInfoOps(int, void *){
             FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
     // show the current frame and the fg masks
     imshow(sourceWindow, frame);
-    // imshow(keypointsWindow, im_with_keypoints);
 }
