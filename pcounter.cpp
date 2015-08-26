@@ -39,11 +39,13 @@ int closing = 5;
 int max_thresh = 255;
 int morph_operator = 0;
 int morph_elem = 0;
-int open_morph_size = 5;
-int close_morph_size = 5;
+int open_morph_size = 4;
+int close_morph_size = 10;
+int minAreaSize = 500;
 int const max_operator = 4;
 int const max_elem = 2;
 int const max_kernel_size = 50;
+int const max_area_size = 10000;
 
 // windows names
 const char *sourceWindow = "Source";
@@ -85,10 +87,12 @@ void createGuiObjects() {
 
   createTrackbar("Canny thresh: ", contoursWindow, &thresh, max_thresh,
                  cannyOps);
-  createTrackbar("OpenKernel size:\n", contoursWindow, &open_morph_size,
+  createTrackbar("OpenKernel size:\n", fgMaskWindow, &open_morph_size,
                  max_kernel_size, morphOps);
-  createTrackbar("CloseKernel size:\n", contoursWindow, &close_morph_size,
+  createTrackbar("CloseKernel size:\n", fgMaskWindow, &close_morph_size,
                  max_kernel_size, morphOps);
+  createTrackbar("Min Area size:\n", fgMaskWindow, &minAreaSize,
+                 max_area_size, morphOps);
 }
 
 /**
@@ -220,7 +224,7 @@ void processVideo(char *videoFilename) {
       printOnceOnly = false;
     }
     // get the input from the keyboard
-    keyboard = waitKey(30);
+    keyboard = waitKey(200); //15 fps
   }
   // delete capture object
   capture.release();
@@ -246,21 +250,30 @@ void cannyOps(int, void *) {
   vector<Rect> boundRect( contours.size() );
   vector<Point2f> center( contours.size() );
   vector<float> radius( contours.size() );
+  Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
+  double area = 0.0;
 
   for (int i = 0; i < contours.size(); i++) {
     approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
     boundRect[i] = boundingRect( Mat(contours_poly[i]) );
     minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+
+    area = contourArea(contours[i], false);
+    string areaString = "area=";
+    areaString += to_string(area);
+    
+
+    // Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+    Scalar color = Scalar(0, 0, 255);
+    
+    if (area > minAreaSize) {
+      // drawContours(frame, contours, i, color, 2, 8, hierarchy, 0, Point());
+      putText(frame, areaString.c_str(), center[i], FONT_HERSHEY_SIMPLEX, .5, cv::Scalar(200, 200, 250));
+      rectangle( frame, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );  
+    }
+    
   }
-
-  Mat drawing = Mat::zeros(canny_output.size(), CV_8UC3);
-  for (int i = 0; i < contours.size(); i++) {
-    Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-    drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
-    rectangle( frame, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
-
-  }
-
+  
   imshow(contoursWindow, drawing);
 }
 
