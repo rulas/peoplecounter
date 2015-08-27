@@ -191,6 +191,12 @@ void processVideo(char *videoFilename) {
     exit(EXIT_FAILURE);
   }
 
+
+  double fps = capture.get(CV_CAP_PROP_FPS);
+  int waitTime = (int) 1/fps*1000;
+  cout << "frames per second: " << fps << endl;
+  cout << "waitTime: " << waitTime << endl;
+
   params.maxThreshold = 255;
   params.minArea = 10;
   detector = SimpleBlobDetector::create(params);
@@ -224,7 +230,7 @@ void processVideo(char *videoFilename) {
       printOnceOnly = false;
     }
     // get the input from the keyboard
-    keyboard = waitKey(200); //15 fps
+    keyboard = waitKey(waitTime);
   }
   // delete capture object
   capture.release();
@@ -273,7 +279,7 @@ void cannyOps(int, void *) {
     }
     
   }
-  
+
   imshow(contoursWindow, drawing);
 }
 
